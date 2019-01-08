@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.casic.mapper.AppinfoMapper">
+    <resultMap id="appInfoMap" type="com.casic.model.Appinfo">
+        <id property="id" column="id"/>
+        <result property="softwareName" column="softwareName"/>
+        <result property="APKName" column="APKName"/>
+        <result property="softwareSize" column="softwareSize"/>
+        <result property="flatformId" column="flatformId"/>
+        <result property="status" column="status"/>
+        <result property="downloads" column="downloads"/>
+        <result property="versionId" column="versionId"/>
+        <association property="categoryLevel1" column="id" javaType="com.casic.model.AppCategory">
+            <result property="categoryName" column="categoryLevel1Name"/>
+        </association>
+        <association property="categoryLevel2" column="id" javaType="com.casic.model.AppCategory">
+            <result property="categoryName" column="categoryLevel2Name"/>
+        </association>
+        <association property="categoryLevel3" column="id" javaType="com.casic.model.AppCategory">
+            <result property="categoryName" column="categoryLevel3Name"/>
+        </association>
+        <association property="newAppVersion"  javaType="com.casic.model.AppVersion">
+            <result property="versionNo" column="versionNo"/>
+        </association>
+    </resultMap>
+    <select id="queryByDevUserId" resultMap="appInfoMap">
+      SELECT
+            t1.id,
+            t1.softwareName,
+            t1.APKName,
+            t1.softwareSize,
+            t1.flatformId,
+            t1.`status`,
+            t1.downloads,
+            t1.versionId,
+            tc1.categoryName as categoryLevel1Name,
+            tc2.categoryName as categoryLevel2Name,
+            tc3.categoryName as categoryLevel3Name,
+            t3.versionNo
+      FROM
+            app_info t1
+            LEFT JOIN app_category tc1 on t1.categoryLevel1 = tc1.id
+            LEFT JOIN app_category tc2 on t1.categoryLevel2 = tc2.id
+            LEFT JOIN app_category tc3 on t1.categoryLevel3 = tc3.id
+            LEFT JOIN app_version t3 on t1.versionId = t3.id
+            ,dev_user t4
+        WHERE t1.devId=t4.id
+        and t4.id=#{id}
+    </select>
+</mapper>
